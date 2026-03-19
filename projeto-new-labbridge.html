@@ -3,136 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>New LabBridge — Projeto</title>
+<title>LabBridge — Projeto</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
---void:#050507;--text:rgba(255,255,255,.88);--dim:rgba(255,255,255,.55);
---ghost:rgba(255,255,255,.30);--border:rgba(255,255,255,.06);
---accent:#10B981;--accent-dim:rgba(16,185,129,.3);--accent-glow:rgba(16,185,129,.15);
+--primary:#10B981;
+--primary-light:rgba(16,185,129,.12);
+--primary-dim:rgba(16,185,129,.3);
+--primary-glow:rgba(16,185,129,.15);
+--bg:#0A0A0B;
+--surface:#141416;
+--card:#1A1A1D;
+--text:#E5E7EB;
+--muted:#9CA3AF;
+--subtle:#6B7280;
+--border:rgba(255,255,255,.08);
+--void:#050507;
 }
 html{scroll-behavior:smooth}
-body{background:var(--void);color:var(--text);font-family:'Manrope',sans-serif;overflow-x:hidden;line-height:1.7}
-h1,h2,h3,.hero-title{font-family:'Instrument Serif',serif;font-weight:400}
-.label,.mono{font-family:'DM Mono',monospace}
-
-/* ── grain overlay ── */
-.grain{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:.022}
-.grain svg{width:100%;height:100%}
+body{background:var(--void);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.7;font-weight:400}
+h1,h2,h3{font-weight:700}
+.mono{font-family:'DM Mono',monospace}
 
 /* ── wormhole ── */
 .wormhole{position:fixed;inset:0;z-index:10000;background:var(--void);transition:opacity 1s ease,visibility 1s ease}
 .wormhole.gone{opacity:0;visibility:hidden;pointer-events:none}
 .wh-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .8s ease;pointer-events:none}
 .wh-phase.active{opacity:1}
-.wh-engine-glow{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--accent-dim),transparent 70%);animation:engine-pulse 1.5s ease-in-out infinite;margin-bottom:40px}
+.wh-engine-glow{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--primary-dim),transparent 70%);animation:engine-pulse 1.5s ease-in-out infinite;margin-bottom:40px}
 @keyframes engine-pulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.4);opacity:.9}}
-.wh-project-name{font-family:'Instrument Serif',serif;font-size:clamp(1.5rem,4vw,2.5rem);color:#fff;margin-bottom:16px}
-.wh-msg{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.2em;color:var(--ghost);animation:text-fade 2s ease-in-out infinite}
+.wh-project-name{font-family:'DM Mono',monospace;font-size:clamp(1.5rem,4vw,2.5rem);color:#fff;margin-bottom:16px;font-weight:500;letter-spacing:-.02em}
+.wh-msg{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.2em;color:var(--subtle);animation:text-fade 2s ease-in-out infinite}
 @keyframes text-fade{0%,100%{opacity:.3}50%{opacity:.8}}
 .wormhole-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .wormhole-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--void) 75%)}
 .wh-msg-2{position:relative;z-index:2;margin-top:auto;margin-bottom:60px}
-.wh-welcome{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.25em;color:var(--dim);margin-bottom:16px}
-.wh-arrival-name{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,3.5rem);color:#fff;animation:arrival-glow 1s ease-out}
+.wh-welcome{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.25em;color:var(--muted);margin-bottom:16px}
+.wh-arrival-name{font-family:'Inter',sans-serif;font-size:clamp(2rem,5vw,3.5rem);color:#fff;font-weight:800;letter-spacing:-.03em;animation:arrival-glow 1s ease-out}
+.wh-arrival-name span{color:var(--primary)}
 @keyframes arrival-glow{0%{opacity:0;transform:scale(.9);filter:blur(10px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+
+/* ── main content ── */
+.main-content{opacity:0;transition:opacity .8s ease}
+.main-content.visible{opacity:1}
 
 /* ── back link fixed ── */
 .back-fixed{position:fixed;top:28px;left:32px;z-index:90;font-family:'DM Mono',monospace;font-size:.75rem;
-color:var(--ghost);text-decoration:none;letter-spacing:.04em;transition:color .3s}
-.back-fixed:hover{color:var(--accent)}
+color:var(--subtle);text-decoration:none;letter-spacing:.04em;transition:color .3s;opacity:0;pointer-events:none}
+.back-fixed.show{opacity:1;pointer-events:auto}
+.back-fixed:hover{color:var(--primary)}
 
-/* ── section helpers ── */
-.section{max-width:1080px;margin:0 auto;padding:120px 24px}
-.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px;display:block}
-.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:24px;line-height:1.2}
+/* ── nav ── */
+.nav{position:sticky;top:0;z-index:80;background:rgba(10,10,11,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700;font-size:1.05rem;letter-spacing:-.02em}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 12px var(--primary-dim);flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .3s;font-weight:500}
+.nav-links a:hover{color:var(--primary)}
 
 /* ── reveal ── */
 .rv{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
 .rv.vis{opacity:1;transform:translateY(0)}
 
+/* ── section helpers ── */
+.section{max-width:1080px;margin:0 auto;padding:120px 24px}
+
 /* ── hero ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 40px;position:relative}
-.hero-title{font-size:clamp(3rem,6vw,5.5rem);line-height:1.08;margin-bottom:16px;
-background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-tagline{font-size:clamp(1rem,2vw,1.25rem);color:var(--dim);margin-bottom:40px;font-weight:300}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:100px;background:var(--primary-light);border:1px solid rgba(16,185,129,.2);font-size:.78rem;color:var(--primary);font-weight:600;margin-bottom:32px;letter-spacing:.02em}
+.hero-badge svg{width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-title{font-size:clamp(2.8rem,6vw,5rem);line-height:1.08;margin-bottom:20px;font-weight:800;letter-spacing:-.04em;color:#fff}
+.hero-title .em{color:var(--primary)}
+.hero-subtitle{font-size:clamp(1rem,2vw,1.2rem);color:var(--muted);margin-bottom:44px;font-weight:300;max-width:560px;line-height:1.7}
 .hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:60px;font-family:'Manrope',sans-serif;
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-family:'Inter',sans-serif;
 font-size:.85rem;font-weight:600;text-decoration:none;transition:all .35s ease;cursor:pointer;border:none}
-.btn-solid{background:var(--accent);color:#050507}
-.btn-solid:hover{box-shadow:0 0 30px var(--accent-dim);transform:translateY(-2px)}
+.btn-solid{background:var(--primary);color:#050507}
+.btn-solid:hover{box-shadow:0 0 30px var(--primary-dim),0 0 60px rgba(16,185,129,.1);transform:translateY(-2px)}
 .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-2px)}
 .scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
-.scroll-cue span{font-family:'DM Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--ghost)}
-.scroll-line{width:1px;height:32px;background:linear-gradient(to bottom,var(--ghost),transparent);animation:scroll-pulse 2s ease-in-out infinite}
+.scroll-cue span{font-family:'DM Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--subtle)}
+.scroll-line{width:1px;height:32px;background:linear-gradient(to bottom,var(--subtle),transparent);animation:scroll-pulse 2s ease-in-out infinite}
 @keyframes scroll-pulse{0%,100%{opacity:.3;height:32px}50%{opacity:.8;height:44px}}
 
-/* ── overview ── */
-.overview-text{max-width:700px}
-.overview-text p{color:var(--dim);margin-bottom:16px;font-size:1rem;line-height:1.8}
+/* ── about / origin ── */
+.about-content{max-width:720px}
+.about-label{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--primary);margin-bottom:12px;display:block}
+.about-title{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:32px;line-height:1.2;color:#fff;letter-spacing:-.03em}
+.about-content p{color:var(--muted);margin-bottom:20px;font-size:1rem;line-height:1.85;font-weight:300}
+.about-content p:first-of-type{color:var(--text);font-size:1.1rem;font-weight:400}
+.about-quote{margin-top:36px;padding:24px 0 24px 28px;border-left:3px solid var(--primary);position:relative}
+.about-quote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);box-shadow:0 0 20px var(--primary-dim)}
+.about-quote p{color:var(--text);font-size:1rem;font-style:italic;line-height:1.8;margin-bottom:0;font-weight:400}
 
 /* ── preview ── */
-.sec-space{max-width:1080px;margin:0 auto;padding:120px 24px}
-.sec-label{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px;display:block}
-.sec-label .i{margin-right:10px;color:var(--ghost)}
-.sec-h{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:16px;line-height:1.2}
-.sec-p{color:var(--dim);font-size:1rem;line-height:1.8;margin-bottom:40px;max-width:700px}
+.preview-section{max-width:1080px;margin:0 auto;padding:120px 24px}
+.sec-label{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--primary);margin-bottom:12px;display:block}
+.sec-h{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:16px;line-height:1.2;color:#fff;letter-spacing:-.03em}
+.sec-p{color:var(--muted);font-size:1rem;line-height:1.8;margin-bottom:40px;max-width:700px;font-weight:300}
 .preview-tabs{display:flex;gap:8px;margin-bottom:24px}
-.preview-tab{padding:10px 24px;border-radius:100px;font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .3s}
-.preview-tab:hover{border-color:var(--border-h);color:var(--text)}
-.preview-tab.active{background:rgba(255,255,255,.06);border-color:var(--accent-dim);color:var(--text)}
-.preview-frame{border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.16,1,.3,1);background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--border)}
+.preview-tab{padding:10px 24px;border-radius:10px;font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .3s}
+.preview-tab:hover{border-color:rgba(255,255,255,.15);color:var(--text)}
+.preview-tab.active{background:var(--primary-light);border-color:rgba(16,185,129,.25);color:var(--primary)}
+.preview-frame{border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.16,1,.3,1);background:var(--surface);border:1px solid var(--border)}
 .preview-frame.mobile-view{max-width:375px;margin:0 auto;border-radius:28px;border-width:3px}
-.browser-bar{background:rgba(255,255,255,.04);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.browser-bar{background:var(--card);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
 .browser-dots{display:flex;gap:6px}
-.browser-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12)}
-.browser-url{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.25)}
-.browser-open{color:var(--ghost);transition:color .3s}
-.browser-open:hover{color:var(--text)}
-.preview-screen{position:relative;width:100%;height:70vh;min-height:500px;background:var(--void)}
+.browser-dots span{width:8px;height:8px;border-radius:50%}
+.browser-dots span:nth-child(1){background:#EF4444}
+.browser-dots span:nth-child(2){background:#F59E0B}
+.browser-dots span:nth-child(3){background:#10B981}
+.browser-url{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;color:var(--subtle);background:var(--surface);padding:6px 14px;border-radius:8px}
+.browser-open{color:var(--subtle);transition:color .3s;display:flex;align-items:center}
+.browser-open:hover{color:var(--primary)}
+.preview-screen{position:relative;width:100%;height:70vh;min-height:500px;background:var(--bg)}
 .preview-screen iframe{width:100%;height:100%;border:none}
-.preview-hint{text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ghost);margin-top:20px}
-.glass{backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px)}
+.preview-hint{text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--subtle);margin-top:20px}
 
 /* ── features grid ── */
+.features-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:120px 24px}
+.features-inner{max-width:1080px;margin:0 auto}
+.features-label{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--primary);margin-bottom:12px;display:block}
+.features-title{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:48px;line-height:1.2;color:#fff;letter-spacing:-.03em}
 .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.feat-card{background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
-backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid var(--border);border-radius:20px;
-padding:36px 32px;transition:transform .4s ease,box-shadow .4s ease}
-.feat-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.feat-icon{width:44px;height:44px;border-radius:12px;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-.feat-icon svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.feat-card h3{font-size:1.15rem;margin-bottom:10px;color:var(--text)}
-.feat-card p{font-size:.88rem;color:var(--dim);line-height:1.7}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+padding:36px 32px;transition:all .4s ease;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(16,185,129,.06),transparent 60%);opacity:0;transition:opacity .4s ease}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(16,185,129,.2);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(16,185,129,.05)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{width:48px;height:48px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;z-index:1}
+.feat-icon svg{width:22px;height:22px;stroke:var(--primary);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat-card h3{font-size:1.1rem;margin-bottom:10px;color:#fff;font-weight:600;position:relative;z-index:1}
+.feat-card p{font-size:.88rem;color:var(--muted);line-height:1.7;font-weight:300;position:relative;z-index:1}
 
 /* ── tech chips ── */
+.tech-section{max-width:1080px;margin:0 auto;padding:120px 24px}
+.tech-label{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:var(--primary);margin-bottom:12px;display:block}
+.tech-title{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:32px;line-height:1.2;color:#fff;letter-spacing:-.03em}
 .tech-chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
-.chip{padding:10px 24px;border-radius:60px;font-family:'DM Mono',monospace;font-size:.78rem;
-background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--dim);transition:all .3s}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-
+.chip{padding:12px 28px;border-radius:12px;font-family:'DM Mono',monospace;font-size:.8rem;
+background:var(--card);border:1px solid var(--border);color:var(--muted);transition:all .3s;font-weight:400}
+.chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light);box-shadow:0 0 20px rgba(16,185,129,.08)}
 
 /* ── CTA ── */
-.cta-section{text-align:center;padding:100px 24px 80px}
-.cta-card{max-width:640px;margin:0 auto;padding:56px 48px;border-radius:20px;
-background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
-backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid var(--border)}
-.cta-card h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px}
-.cta-card p{color:var(--dim);margin-bottom:32px;font-size:.95rem}
-.cta-card .hero-btns{margin-bottom:24px}
-.cta-back{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ghost);text-decoration:none;transition:color .3s}
-.cta-back:hover{color:var(--accent)}
+.cta-section{text-align:center;padding:100px 24px 80px;max-width:1080px;margin:0 auto}
+.cta-card{max-width:680px;margin:0 auto;padding:60px 48px;border-radius:20px;
+background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden}
+.cta-card::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:140%;background:radial-gradient(ellipse at center,rgba(16,185,129,.06),transparent 60%);pointer-events:none}
+.cta-card h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px;color:#fff;letter-spacing:-.03em;position:relative;z-index:1}
+.cta-card p{color:var(--muted);margin-bottom:32px;font-size:.95rem;font-weight:300;position:relative;z-index:1}
+.cta-card .hero-btns{margin-bottom:24px;position:relative;z-index:1}
+.cta-back{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--subtle);text-decoration:none;transition:color .3s;position:relative;z-index:1}
+.cta-back:hover{color:var(--primary)}
 
 /* ── footer ── */
 footer{border-top:1px solid var(--border);padding:32px 24px;display:flex;align-items:center;justify-content:space-between;
 max-width:1080px;margin:0 auto}
-footer a{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ghost);text-decoration:none;transition:color .3s}
-footer a:hover{color:var(--accent)}
-footer span{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ghost)}
+footer a{font-size:.8rem;color:var(--subtle);text-decoration:none;transition:color .3s;font-weight:400}
+footer a:hover{color:var(--primary)}
+footer span{font-size:.75rem;color:var(--subtle)}
 
 /* ── responsive ── */
 @media(max-width:900px){
@@ -140,190 +173,253 @@ footer span{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ghost)}
 }
 @media(max-width:600px){
 .section{padding:80px 18px}
-.sec-space{padding:80px 18px}
-.hero{padding:60px 18px 32px}
-.hero-title{font-size:clamp(2.2rem,8vw,3.2rem)}
+.preview-section{padding:80px 18px}
+.features-section{padding:80px 18px}
+.tech-section{padding:80px 18px}
+.hero{padding:80px 18px 40px}
+.hero-title{font-size:clamp(2rem,8vw,3rem)}
 .feat-card{padding:28px 22px}
-.cta-card{padding:36px 24px}
+.cta-card{padding:40px 24px}
+.cta-section{padding:80px 18px 60px}
 .back-fixed{top:18px;left:18px}
-footer{flex-direction:column;gap:12px;text-align:center}
+.nav{padding:0 18px}
+footer{flex-direction:column;gap:12px;text-align:center;padding:24px 18px}
 .preview-screen{height:50vh;min-height:350px}
+.hero-btns{flex-direction:column;align-items:center}
+.btn{width:100%;justify-content:center;max-width:280px}
 }
 </style>
 </head>
 <body>
 
-<!-- grain -->
-<div class="grain" aria-hidden="true">
-<svg><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
-</div>
-
 <!-- wormhole -->
 <div class="wormhole" id="wormhole">
   <div class="wh-phase wh-phase-1 active" id="whPhase1">
     <div class="wh-engine-glow"></div>
-    <p class="wh-project-name">New LabBridge</p>
-    <p class="wh-msg">aquecendo os motores...</p>
+    <p class="wh-project-name">LabBridge</p>
+    <p class="wh-msg">transportando voc&ecirc; para a dimens&atilde;o LabBridge...</p>
   </div>
   <div class="wh-phase wh-phase-2" id="whPhase2">
     <video class="wormhole-video" autoplay muted loop playsinline>
       <source src="video-buraco-negro.mp4" type="video/mp4">
     </video>
     <div class="wormhole-overlay"></div>
-    <p class="wh-msg wh-msg-2">transportando voc&ecirc; para a dimens&atilde;o New LabBridge...</p>
+    <p class="wh-msg wh-msg-2">transportando voc&ecirc; para a dimens&atilde;o LabBridge...</p>
   </div>
   <div class="wh-phase wh-phase-3" id="whPhase3">
     <p class="wh-welcome">Bem-vindo &agrave; dimens&atilde;o</p>
-    <p class="wh-arrival-name">New LabBridge</p>
+    <p class="wh-arrival-name">Lab<span>Bridge</span></p>
   </div>
 </div>
 
 <!-- back link -->
-<a href="index.html" class="back-fixed">&larr; Voltar ao portf&oacute;lio</a>
+<a href="index.html" class="back-fixed" id="backBtn">&larr; Voltar ao portf&oacute;lio</a>
+
+<!-- main content -->
+<div class="main-content" id="mainContent">
+
+<!-- nav -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    LabBridge
+  </a>
+  <div class="nav-links">
+    <a href="#about">Sobre</a>
+    <a href="#preview">Preview</a>
+    <a href="#features">Features</a>
+    <a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer">Acessar &nearr;</a>
+  </div>
+</nav>
 
 <!-- hero -->
 <section class="hero">
-<h1 class="hero-title rv">New LabBridge</h1>
-<p class="hero-tagline rv">A evolu&ccedil;&atilde;o da gest&atilde;o laboratorial</p>
-<div class="hero-btns rv">
-<a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="btn btn-solid">Acessar projeto</a>
-<a href="https://github.com/otavio0machado/New_LabBridge" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver c&oacute;digo</a>
-</div>
-<div class="scroll-cue">
-<span>scroll</span>
-<div class="scroll-line"></div>
-</div>
+  <div class="hero-badge rv">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Projeto Full-Stack &middot; Evolu&ccedil;&atilde;o
+  </div>
+  <h1 class="hero-title rv">A <span class="em">ponte</span> entre dados,<br>processos e pessoas</h1>
+  <p class="hero-subtitle rv">Integrando informa&ccedil;&otilde;es dispersas em um fluxo claro, eficiente e confi&aacute;vel.</p>
+  <div class="hero-btns rv">
+    <a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="btn btn-solid">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 17 9.2-9.2M17 17V7H7"/></svg>
+      Acessar projeto
+    </a>
+    <a href="https://github.com/otavio0machado/New_LabBridge" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      C&oacute;digo fonte
+    </a>
+  </div>
+  <div class="scroll-cue">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
 </section>
 
-<!-- overview -->
-<section class="section">
-<span class="label rv">01 Sobre</span>
-<h2 class="section-title rv">Uma plataforma completa para gest&atilde;o laboratorial</h2>
-<div class="overview-text">
-<p class="rv">New LabBridge representa a evolu&ccedil;&atilde;o do sistema original de gest&atilde;o laboratorial. Com uma interface completamente redesenhada e funcionalidades expandidas, esta nova vers&atilde;o vai al&eacute;m da simples compara&ccedil;&atilde;o de faturamento.</p>
-<p class="rv">Oferecendo uma plataforma completa para gest&atilde;o do fluxo laboratorial, constru&iacute;do sobre Python e Supabase com deploy automatizado no Railway.</p>
-</div>
-</section>
-
-<!-- interactive preview -->
-<section class="sec-space" id="preview">
-  <div class="container">
-    <div class="sec-label rv"><span class="i">02</span>Experimente</div>
-    <h2 class="sec-h rv">Explore o projeto <em>ao vivo</em></h2>
-    <p class="sec-p rv">Interaja diretamente com o projeto. Navegue, clique e descubra todas as funcionalidades.</p>
-    <div class="preview-wrap rv">
-      <div class="preview-tabs">
-        <button class="preview-tab active" data-view="desktop">Desktop</button>
-        <button class="preview-tab" data-view="mobile">Mobile</button>
-      </div>
-      <div class="preview-frame glass" id="previewFrame">
-        <div class="browser-bar">
-          <div class="browser-dots"><span></span><span></span><span></span></div>
-          <div class="browser-url">newlabbridge-production.up.railway.app</div>
-          <a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="browser-open" title="Abrir em nova aba">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 17 9.2-9.2M17 17V7H7"/></svg>
-          </a>
-        </div>
-        <div class="preview-screen">
-          <iframe src="https://newlabbridge-production.up.railway.app/" loading="lazy" allow="fullscreen"></iframe>
-        </div>
-      </div>
-      <p class="preview-hint rv">&uarr; Use o mouse para navegar dentro do projeto</p>
+<!-- about -->
+<section class="section" id="about">
+  <div class="about-content">
+    <span class="about-label rv">A origem do projeto</span>
+    <h2 class="about-title rv">A origem do projeto</h2>
+    <p class="rv">O LabBridge &eacute;, provavelmente, o projeto que melhor representa minha evolu&ccedil;&atilde;o como desenvolvedor.</p>
+    <p class="rv">Ele foi concebido como uma ponte &mdash; literalmente &mdash; entre dados, processos e pessoas dentro de um ambiente laboratorial. A ideia central &eacute; integrar informa&ccedil;&otilde;es que antes estavam dispersas, criando um fluxo mais claro, eficiente e confi&aacute;vel.</p>
+    <p class="rv">Mais do que um sistema, o LabBridge &eacute; uma arquitetura de organiza&ccedil;&atilde;o: ele conecta etapas, reduz fric&ccedil;&atilde;o e transforma complexidade em algo gerenci&aacute;vel.</p>
+    <div class="about-quote rv">
+      <p>&ldquo;Esse projeto marca um ponto importante: sair de aplica&ccedil;&otilde;es isoladas e come&ccedil;ar a pensar em sistemas como ecossistemas.&rdquo;</p>
     </div>
   </div>
 </section>
 
+<!-- interactive preview -->
+<section class="preview-section" id="preview">
+  <span class="sec-label rv">Preview interativo</span>
+  <h2 class="sec-h rv">Explore o projeto <em>ao vivo</em></h2>
+  <p class="sec-p rv">Interaja diretamente com o projeto. Navegue, clique e descubra todas as funcionalidades.</p>
+  <div class="rv">
+    <div class="preview-tabs">
+      <button class="preview-tab active" data-view="desktop">Desktop</button>
+      <button class="preview-tab" data-view="mobile">Mobile</button>
+    </div>
+    <div class="preview-frame" id="previewFrame">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">newlabbridge-production.up.railway.app</div>
+        <a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="browser-open" title="Abrir em nova aba">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 17 9.2-9.2M17 17V7H7"/></svg>
+        </a>
+      </div>
+      <div class="preview-screen">
+        <iframe src="https://newlabbridge-production.up.railway.app/" loading="lazy" allow="fullscreen"></iframe>
+      </div>
+    </div>
+    <p class="preview-hint">&uarr; Use o mouse para navegar dentro do projeto</p>
+  </div>
+</section>
+
 <!-- features -->
-<section class="section">
-<span class="label rv">03 Funcionalidades</span>
-<h2 class="section-title rv">O que oferece</h2>
-<div class="features-grid">
+<section class="features-section" id="features">
+  <div class="features-inner">
+    <span class="features-label rv">Funcionalidades</span>
+    <h2 class="features-title rv">O que oferece</h2>
+    <div class="features-grid">
 
-<div class="feat-card rv">
-<div class="feat-icon">
-<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/></svg>
-</div>
-<h3>Interface Renovada</h3>
-<p>Design completamente reformulado com foco em usabilidade e experi&ecirc;ncia do usu&aacute;rio modernas.</p>
-</div>
+      <div class="feat-card rv">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/></svg>
+        </div>
+        <h3>Interface Renovada</h3>
+        <p>Design reformulado com foco em usabilidade e experi&ecirc;ncia do usu&aacute;rio modernas.</p>
+      </div>
 
-<div class="feat-card rv">
-<div class="feat-icon">
-<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
-</div>
-<h3>Gest&atilde;o Expandida</h3>
-<p>Novas funcionalidades de gerenciamento que v&atilde;o al&eacute;m da compara&ccedil;&atilde;o, cobrindo todo o fluxo laboratorial.</p>
-</div>
+      <div class="feat-card rv">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        </div>
+        <h3>Gest&atilde;o Expandida</h3>
+        <p>Funcionalidades de gerenciamento que v&atilde;o al&eacute;m da compara&ccedil;&atilde;o, cobrindo todo o fluxo laboratorial.</p>
+      </div>
 
-<div class="feat-card rv">
-<div class="feat-icon">
-<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-</div>
-<h3>Relat&oacute;rios Avan&ccedil;ados</h3>
-<p>Sistema de relat&oacute;rios mais completo com filtros, exporta&ccedil;&atilde;o e visualiza&ccedil;&otilde;es aprimoradas.</p>
-</div>
+      <div class="feat-card rv">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3>Relat&oacute;rios Avan&ccedil;ados</h3>
+        <p>Sistema de relat&oacute;rios com filtros, exporta&ccedil;&atilde;o e visualiza&ccedil;&otilde;es aprimoradas.</p>
+      </div>
 
-<div class="feat-card rv">
-<div class="feat-icon">
-<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-</div>
-<h3>Performance Otimizada</h3>
-<p>Arquitetura otimizada para carregamento r&aacute;pido e processamento eficiente de grandes volumes de dados.</p>
-</div>
+      <div class="feat-card rv">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>Performance Otimizada</h3>
+        <p>Arquitetura otimizada para carregamento r&aacute;pido e processamento eficiente de grandes volumes.</p>
+      </div>
 
-</div>
+    </div>
+  </div>
 </section>
 
 <!-- tech -->
-<section class="section">
-<span class="label rv">04 Tecnologias</span>
-<h2 class="section-title rv">Stack utilizada</h2>
-<div class="tech-chips rv">
-<span class="chip">Python</span>
-<span class="chip">Supabase</span>
-<span class="chip">Railway</span>
-<span class="chip">CSS</span>
-</div>
+<section class="tech-section">
+  <span class="tech-label rv">Stack</span>
+  <h2 class="tech-title rv">Tecnologias utilizadas</h2>
+  <div class="tech-chips rv">
+    <span class="chip">Python</span>
+    <span class="chip">Supabase</span>
+    <span class="chip">Railway</span>
+    <span class="chip">CSS</span>
+  </div>
 </section>
 
 <!-- CTA -->
 <section class="cta-section">
-<div class="cta-card rv">
-<h2>Pronto para explorar?</h2>
-<p>Acesse o New LabBridge e descubra o futuro da gest&atilde;o laboratorial.</p>
-<div class="hero-btns">
-<a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="btn btn-solid">Acessar projeto</a>
-<a href="https://github.com/otavio0machado/New_LabBridge" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver c&oacute;digo</a>
-</div>
-<a href="index.html" class="cta-back">&larr; Voltar ao portf&oacute;lio</a>
-</div>
+  <div class="cta-card rv">
+    <h2>Pronto para explorar?</h2>
+    <p>Acesse o LabBridge e descubra o futuro da gest&atilde;o laboratorial.</p>
+    <div class="hero-btns">
+      <a href="https://newlabbridge-production.up.railway.app/" target="_blank" rel="noopener noreferrer" class="btn btn-solid">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 17 9.2-9.2M17 17V7H7"/></svg>
+        Acessar projeto
+      </a>
+      <a href="https://github.com/otavio0machado/New_LabBridge" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        C&oacute;digo fonte
+      </a>
+    </div>
+    <a href="index.html" class="cta-back">&larr; Voltar ao portf&oacute;lio</a>
+  </div>
 </section>
 
 <!-- footer -->
 <footer>
-<a href="index.html">&larr; Voltar ao portf&oacute;lio</a>
-<span>&copy; 2026 Ot&aacute;vio Machado</span>
+  <a href="index.html">&larr; Voltar ao portf&oacute;lio</a>
+  <span>&copy; 2026 Ot&aacute;vio Machado</span>
 </footer>
+
+</div><!-- /main-content -->
 
 <script>
 /* ── 3-phase wormhole ── */
 const wormhole = document.getElementById('wormhole');
+const mainContent = document.getElementById('mainContent');
+const backBtn = document.getElementById('backBtn');
 const phases = [document.getElementById('whPhase1'), document.getElementById('whPhase2'), document.getElementById('whPhase3')];
-function showPhase(i){ phases.forEach((p,idx) => p.classList.toggle('active', idx === i)); }
-setTimeout(() => showPhase(1), 2000);
-setTimeout(() => showPhase(2), 4500);
-setTimeout(() => wormhole.classList.add('gone'), 6000);
+
+function showPhase(i) {
+  phases.forEach(function(p, idx) {
+    p.classList.toggle('active', idx === i);
+  });
+}
+
+setTimeout(function() { showPhase(1); }, 2000);
+setTimeout(function() { showPhase(2); }, 4500);
+setTimeout(function() {
+  wormhole.classList.add('gone');
+  document.body.style.background = '#0A0A0B';
+  mainContent.classList.add('visible');
+  backBtn.classList.add('show');
+}, 6000);
 
 /* ── scroll reveal ── */
-var observer=new IntersectionObserver(function(entries){
-entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');observer.unobserve(e.target)}})
-},{threshold:0.12});
-document.querySelectorAll('.rv').forEach(function(el){observer.observe(el)});
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      e.target.classList.add('vis');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.rv').forEach(function(el) {
+  observer.observe(el);
+});
 
 /* ── preview tabs ── */
-document.querySelectorAll('.preview-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+document.querySelectorAll('.preview-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.preview-tab').forEach(function(t) {
+      t.classList.remove('active');
+    });
     tab.classList.add('active');
     document.getElementById('previewFrame').classList.toggle('mobile-view', tab.dataset.view === 'mobile');
   });
