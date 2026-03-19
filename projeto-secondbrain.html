@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecondBrain — Gestao inteligente do conhecimento academico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#050507;
+  --text:rgba(255,255,255,.88);
+  --dim:rgba(255,255,255,.55);
+  --ghost:rgba(255,255,255,.30);
+  --border:rgba(255,255,255,.06);
+  --accent:#8B5CF6;
+  --accent-dim:rgba(139,92,246,.3);
+  --accent-glow:rgba(139,92,246,.15);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'Manrope',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+h1,h2,h3{font-family:'Instrument Serif',serif;font-weight:400}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ── Grain overlay ── */
+.grain{
+  position:fixed;inset:0;z-index:9999;
+  pointer-events:none;opacity:.022;
+}
+.grain svg{width:100%;height:100%}
+
+/* ── Scroll reveal ── */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.rv.vis{opacity:1;transform:translateY(0)}
+
+/* ── Wormhole Loading ── */
+#wormhole{position:fixed;inset:0;z-index:10000;background:var(--void);transition:opacity 1s ease,visibility 1s ease}
+#wormhole.gone{opacity:0;visibility:hidden;pointer-events:none}
+
+.wh-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .8s ease;pointer-events:none}
+.wh-phase.active{opacity:1}
+
+/* Phase 1 */
+.wh-engine-glow{
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,var(--accent-dim),transparent 70%);
+  animation:engine-pulse 1.5s ease-in-out infinite;
+  margin-bottom:40px;
+}
+@keyframes engine-pulse{
+  0%,100%{transform:scale(1);opacity:.4}
+  50%{transform:scale(1.4);opacity:.9}
+}
+.wh-project-name{font-family:'Instrument Serif',serif;font-size:clamp(1.5rem,4vw,2.5rem);color:#fff;margin-bottom:16px}
+.wh-msg{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.2em;color:var(--ghost);animation:text-fade 2s ease-in-out infinite}
+@keyframes text-fade{0%,100%{opacity:.3}50%{opacity:.8}}
+
+/* Phase 2 */
+.wormhole-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.wormhole-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--void) 75%)}
+.wh-msg-2{position:relative;z-index:2;margin-top:auto;margin-bottom:60px}
+
+/* Phase 3 */
+.wh-welcome{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.25em;color:var(--dim);margin-bottom:16px}
+.wh-arrival-name{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,3.5rem);color:#fff;animation:arrival-glow 1s ease-out}
+@keyframes arrival-glow{0%{opacity:0;transform:scale(.9);filter:blur(10px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+
+/* ── Back button ── */
+.back-btn{
+  position:fixed;top:24px;left:24px;z-index:90;
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--dim);
+  padding:8px 16px;
+  border-radius:100px;
+  transition:all .3s ease;
+  background:transparent;
+}
+.back-btn:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.05);
+}
+
+/* ── Hero ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  position:relative;
+  padding:80px 24px;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(139,92,246,.08),transparent 50%);
+  pointer-events:none;
+}
+.hero-title{
+  font-size:clamp(3rem,7vw,5.5rem);
+  font-weight:400;color:#fff;
+  letter-spacing:-.03em;
+  position:relative;z-index:1;
+}
+.hero-tagline{
+  font-family:'Manrope',sans-serif;
+  font-size:1.1rem;font-weight:300;
+  color:var(--dim);
+  margin-top:16px;max-width:500px;
+  position:relative;z-index:1;
+}
+.hero-buttons{
+  margin-top:40px;display:flex;gap:16px;
+  flex-wrap:wrap;justify-content:center;
+  position:relative;z-index:1;
+}
+.btn-primary,.btn-secondary{
+  padding:16px 32px;border-radius:100px;
+  font-family:'DM Mono',monospace;
+  font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.08em;
+  transition:all .3s ease;
+  display:inline-block;
+}
+.btn-primary{
+  background:var(--accent);color:#fff;border:none;
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px var(--accent-dim);
+}
+.btn-secondary{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--dim);
+}
+.btn-secondary:hover{
+  border-color:var(--accent-dim);
+  color:var(--text);
+}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:40px;left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.scroll-indicator span{
+  font-family:'DM Mono',monospace;
+  font-size:.55rem;text-transform:uppercase;
+  letter-spacing:.2em;color:var(--ghost);
+}
+.scroll-line{
+  width:1px;height:32px;
+  background:linear-gradient(to bottom,var(--ghost),transparent);
+  animation:scroll-bob 2s ease-in-out infinite;
+}
+@keyframes scroll-bob{
+  0%,100%{opacity:.3;transform:scaleY(1)}
+  50%{opacity:.8;transform:scaleY(1.3)}
+}
+
+/* ── Sections common ── */
+.section{padding:120px 24px}
+.sec-space{padding:120px 24px}
+.container{max-width:900px;margin:0 auto}
+
+.section-label{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:48px;
+}
+.section-label .num{
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;text-transform:uppercase;
+  letter-spacing:.25em;color:var(--dim);
+}
+.section-label .label-text{
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;text-transform:uppercase;
+  letter-spacing:.25em;color:var(--ghost);
+}
+.section-label::after{
+  content:'';flex:1;height:1px;
+  background:var(--border);
+}
+
+.sec-label{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:48px;
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;text-transform:uppercase;
+  letter-spacing:.25em;color:var(--ghost);
+}
+.sec-label .i{
+  color:var(--dim);margin-right:8px;
+}
+.sec-label::after{
+  content:'';flex:1;height:1px;
+  background:var(--border);
+}
+
+.section-heading{
+  font-size:clamp(2rem,4vw,3rem);
+  color:#fff;margin-bottom:32px;
+  letter-spacing:-.02em;
+}
+.sec-h{
+  font-size:clamp(2rem,4vw,3rem);
+  color:#fff;margin-bottom:16px;
+  letter-spacing:-.02em;
+}
+.sec-p{
+  font-size:.95rem;color:var(--dim);
+  line-height:1.8;font-weight:300;
+  margin-bottom:48px;
+}
+
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+  border:1px solid var(--border);
+  backdrop-filter:blur(40px);
+  -webkit-backdrop-filter:blur(40px);
+}
+
+/* ── Overview ── */
+.overview-text{
+  font-weight:300;font-size:.95rem;
+  color:var(--dim);line-height:1.8;
+}
+
+/* ── Interactive Preview ── */
+.preview-tabs{display:flex;gap:8px;margin-bottom:24px}
+.preview-tab{
+  padding:10px 24px;border-radius:100px;
+  font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .3s;
+}
+.preview-tab:hover{border-color:var(--border-h);color:var(--text)}
+.preview-tab.active{background:rgba(255,255,255,.06);border-color:var(--accent-dim);color:var(--text)}
+
+.preview-frame{border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.16,1,.3,1)}
+.preview-frame.mobile-view{max-width:375px;margin:0 auto;border-radius:28px;border-width:3px}
+
+.browser-bar{
+  background:rgba(255,255,255,.04);padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.browser-dots{display:flex;gap:6px}
+.browser-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12)}
+.browser-url{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.25)}
+.browser-open{color:var(--ghost);transition:color .3s}
+.browser-open:hover{color:var(--text)}
+
+.preview-screen{position:relative;width:100%;height:70vh;min-height:500px;background:var(--void)}
+.preview-screen iframe{width:100%;height:100%;border:none}
+
+.preview-hint{
+  text-align:center;font-family:'DM Mono',monospace;font-size:.65rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ghost);margin-top:20px;
+}
+
+/* ── Features ── */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
+.feature-card{
+  background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+  backdrop-filter:blur(40px);
+  -webkit-backdrop-filter:blur(40px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px;
+  transition:all .4s cubic-bezier(.22,1,.36,1);
+}
+.feature-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--accent-dim);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.feature-icon{
+  width:24px;height:24px;color:var(--accent);
+}
+.feature-title{
+  font-family:'Instrument Serif',serif;
+  font-size:1.2rem;font-weight:400;
+  margin-top:16px;color:#fff;
+}
+.feature-desc{
+  font-size:.85rem;color:var(--dim);
+  line-height:1.7;margin-top:8px;
+}
+
+/* ── Tech stack ── */
+.tech-chips{
+  display:flex;flex-wrap:wrap;gap:12px;
+}
+.tech-chip{
+  padding:10px 20px;border-radius:100px;
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  border:1px solid var(--border);
+  color:var(--dim);
+  transition:all .3s ease;
+}
+.tech-chip:hover{
+  border-color:var(--accent-dim);
+  color:var(--text);
+  background:rgba(139,92,246,.06);
+}
+
+
+/* ── CTA ── */
+.cta-card{
+  background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+  backdrop-filter:blur(40px);
+  -webkit-backdrop-filter:blur(40px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:80px 48px;
+  text-align:center;
+}
+.cta-heading{
+  font-size:clamp(2rem,4vw,3rem);
+  color:#fff;margin-bottom:32px;
+  letter-spacing:-.02em;
+}
+.cta-buttons{
+  display:flex;gap:16px;justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:32px;
+}
+.cta-back{
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--ghost);
+  transition:color .3s ease;
+}
+.cta-back:hover{color:var(--text)}
+
+/* ── Footer ── */
+.footer{
+  padding:40px 24px;
+  border-top:1px solid var(--border);
+}
+.footer-inner{
+  max-width:900px;margin:0 auto;
+  display:flex;justify-content:space-between;
+  align-items:center;
+}
+.footer a,.footer span{
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--ghost);
+}
+.footer a{transition:color .3s ease}
+.footer a:hover{color:var(--text)}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .features-grid{grid-template-columns:1fr}
+  .preview-frame{border-radius:12px}
+}
+@media(max-width:600px){
+  .section{padding:80px 16px}
+  .sec-space{padding:80px 16px}
+  .hero{padding:60px 16px}
+  .hero-title{letter-spacing:-.02em}
+  .hero-buttons{flex-direction:column;align-items:center}
+  .btn-primary,.btn-secondary{width:100%;max-width:280px;text-align:center}
+  .cta-card{padding:48px 24px}
+  .cta-buttons{flex-direction:column;align-items:center}
+  .cta-buttons .btn-primary,.cta-buttons .btn-secondary{width:100%;max-width:280px;text-align:center}
+  .feature-card{padding:24px}
+  .footer-inner{flex-direction:column;gap:16px;text-align:center}
+  .preview-screen{height:50vh;min-height:400px}
+}
+</style>
+</head>
+<body>
+
+<!-- Grain overlay -->
+<div class="grain" aria-hidden="true">
+  <svg width="100%" height="100%">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+  </svg>
+</div>
+
+<!-- Wormhole loading screen -->
+<div id="wormhole">
+  <!-- Phase 1: Warming up -->
+  <div class="wh-phase wh-phase-1 active" id="whPhase1">
+    <div class="wh-engine-glow"></div>
+    <p class="wh-project-name">SecondBrain</p>
+    <p class="wh-msg">aquecendo os motores...</p>
+  </div>
+  <!-- Phase 2: Wormhole video -->
+  <div class="wh-phase wh-phase-2" id="whPhase2">
+    <video class="wormhole-video" autoplay muted loop playsinline>
+      <source src="video-buraco-negro.mp4" type="video/mp4">
+    </video>
+    <div class="wormhole-overlay"></div>
+    <p class="wh-msg wh-msg-2">transportando você para a dimensão SecondBrain...</p>
+  </div>
+  <!-- Phase 3: Arrival -->
+  <div class="wh-phase wh-phase-3" id="whPhase3">
+    <p class="wh-welcome">Bem-vindo à dimensão</p>
+    <p class="wh-arrival-name">SecondBrain</p>
+  </div>
+</div>
+
+<!-- Back button -->
+<a href="index.html" class="back-btn">&larr; Voltar ao portfolio</a>
+
+<!-- Hero -->
+<section class="hero">
+  <h1 class="hero-title rv">SecondBrain</h1>
+  <p class="hero-tagline rv">Gestao inteligente do conhecimento academico</p>
+  <div class="hero-buttons rv">
+    <a href="https://www.flashcardsgenerator.com.br/" target="_blank" rel="noopener noreferrer" class="btn-primary">Ver demo ao vivo</a>
+    <a href="https://github.com/otavio0machado/flashcards_generator" target="_blank" rel="noopener noreferrer" class="btn-secondary">Codigo fonte</a>
+  </div>
+  <div class="scroll-indicator">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Overview -->
+<section class="section">
+  <div class="container">
+    <div class="section-label rv">
+      <span class="num">01</span>
+      <span class="label-text">Sobre</span>
+    </div>
+    <h2 class="section-heading rv">Sobre o projeto</h2>
+    <p class="overview-text rv">
+      SecondBrain e uma plataforma de gestao de conhecimento academico que utiliza inteligencia artificial do Google Gemini para revolucionar a forma como estudantes aprendem. A aplicacao transforma conteudos brutos em flashcards inteligentes, resumos automaticos e mapas conceituais interativos &mdash; tudo alimentado por IA generativa e construido sobre uma arquitetura robusta com Java e Spring Boot.
+    </p>
+  </div>
+</section>
+
+<!-- Interactive Preview -->
+<section class="sec-space" id="preview">
+  <div class="container">
+    <div class="sec-label rv"><span class="i">02</span>Experimente</div>
+    <h2 class="sec-h rv">Explore o projeto <em>ao vivo</em></h2>
+    <p class="sec-p rv">Interaja diretamente com o projeto. Navegue, clique e descubra todas as funcionalidades.</p>
+
+    <div class="preview-wrap rv">
+      <div class="preview-tabs">
+        <button class="preview-tab active" data-view="desktop">Desktop</button>
+        <button class="preview-tab" data-view="mobile">Mobile</button>
+      </div>
+      <div class="preview-frame glass" id="previewFrame">
+        <div class="browser-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">flashcardsgenerator.com.br</div>
+          <a href="https://www.flashcardsgenerator.com.br/" target="_blank" rel="noopener noreferrer" class="browser-open" title="Abrir em nova aba">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 17 9.2-9.2M17 17V7H7"/></svg>
+          </a>
+        </div>
+        <div class="preview-screen">
+          <iframe src="https://www.flashcardsgenerator.com.br/" loading="lazy" allow="fullscreen"></iframe>
+        </div>
+      </div>
+      <p class="preview-hint rv">↑ Use o mouse para navegar dentro do projeto</p>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section">
+  <div class="container">
+    <div class="section-label rv">
+      <span class="num">03</span>
+      <span class="label-text">Funcionalidades</span>
+    </div>
+    <div class="features-grid">
+      <!-- Feature 1: Flashcards com IA -->
+      <div class="feature-card rv">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="18" rx="3"/>
+          <line x1="8" y1="9" x2="16" y2="9"/>
+          <line x1="8" y1="13" x2="14" y2="13"/>
+          <circle cx="18" cy="18" r="4" fill="currentColor" opacity="0.3"/>
+          <path d="M16.5 17.5l1.5 1.5 2-2" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        <h3 class="feature-title">Flashcards com IA</h3>
+        <p class="feature-desc">Geracao automatica de flashcards inteligentes usando Google Gemini para transformar qualquer conteudo academico em material de estudo eficiente.</p>
+      </div>
+      <!-- Feature 2: Resumos Automaticos -->
+      <div class="feature-card rv">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16"/>
+          <path d="M4 10h16"/>
+          <path d="M4 14h12"/>
+          <path d="M4 18h8"/>
+          <circle cx="19" cy="16" r="3" opacity="0.3" fill="currentColor"/>
+        </svg>
+        <h3 class="feature-title">Resumos Automaticos</h3>
+        <p class="feature-desc">Algoritmos de IA que condensam textos longos em resumos objetivos, mantendo os pontos-chave para revisao rapida.</p>
+      </div>
+      <!-- Feature 3: Mapas Conceituais -->
+      <div class="feature-card rv">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="5" r="3"/>
+          <circle cx="5" cy="18" r="3"/>
+          <circle cx="19" cy="18" r="3"/>
+          <line x1="12" y1="8" x2="5" y2="15"/>
+          <line x1="12" y1="8" x2="19" y2="15"/>
+          <line x1="8" y1="18" x2="16" y2="18"/>
+        </svg>
+        <h3 class="feature-title">Mapas Conceituais</h3>
+        <p class="feature-desc">Visualizacao interativa das relacoes entre conceitos, facilitando a compreensao de temas complexos.</p>
+      </div>
+      <!-- Feature 4: Gestao de Conhecimento -->
+      <div class="feature-card rv">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+          <path d="M9 13h6" opacity="0.5"/>
+          <path d="M12 10v6" opacity="0.5"/>
+        </svg>
+        <h3 class="feature-title">Gestao de Conhecimento</h3>
+        <p class="feature-desc">Organizacao centralizada do aprendizado com categorias, tags e progresso de estudo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tech Stack -->
+<section class="section">
+  <div class="container">
+    <div class="section-label rv">
+      <span class="num">04</span>
+      <span class="label-text">Tecnologias</span>
+    </div>
+    <div class="tech-chips rv">
+      <span class="tech-chip">Java</span>
+      <span class="tech-chip">Spring Boot</span>
+      <span class="tech-chip">Gemini API</span>
+      <span class="tech-chip">Supabase</span>
+      <span class="tech-chip">HTML</span>
+      <span class="tech-chip">CSS</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-card rv">
+      <h2 class="cta-heading">Pronto para explorar?</h2>
+      <div class="cta-buttons">
+        <a href="https://www.flashcardsgenerator.com.br/" target="_blank" rel="noopener noreferrer" class="btn-primary">Ver demo ao vivo</a>
+        <a href="https://github.com/otavio0machado/flashcards_generator" target="_blank" rel="noopener noreferrer" class="btn-secondary">Codigo fonte</a>
+      </div>
+      <a href="index.html" class="cta-back">&larr; Voltar ao portfolio</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="index.html">&larr; Voltar ao portfolio</a>
+    <span>&copy; 2026 Otavio Machado</span>
+  </div>
+</footer>
+
+<script>
+// ── Loading Phases ──
+const wormhole = document.getElementById('wormhole');
+const phases = [document.getElementById('whPhase1'), document.getElementById('whPhase2'), document.getElementById('whPhase3')];
+function showPhase(i){ phases.forEach((p,idx) => p.classList.toggle('active', idx === i)); }
+setTimeout(() => showPhase(1), 2000);
+setTimeout(() => showPhase(2), 4500);
+setTimeout(() => wormhole.classList.add('gone'), 6000);
+
+// Scroll reveal
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e,i){
+    if(e.isIntersecting){
+      setTimeout(function(){e.target.classList.add('vis');},i*80);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rv').forEach(function(el){obs.observe(el);});
+
+// ── Preview Tabs ──
+document.querySelectorAll('.preview-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('previewFrame').classList.toggle('mobile-view', tab.dataset.view === 'mobile');
+  });
+});
+</script>
+</body>
+</html>
